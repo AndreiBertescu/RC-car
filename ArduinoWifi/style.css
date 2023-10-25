@@ -1,0 +1,108 @@
+@charset "utf-8";
+/* CSS Document */
+* {
+  /*  	border: 1px dashed red;*/
+  margin: 0;
+  padding: 0;
+  font-family: Segoe, "Segoe UI", "DejaVu Sans", "Trebuchet MS", Verdana, "sans-serif";
+  color: #042940;
+  outline: none;
+}
+body {
+  background-color: #005C53;
+}
+#mainContainer {
+  background-color: #9FC131;
+  margin: auto;
+  width: 50%;
+  height: 100vh;
+}
+header {
+  text-align: center;
+  text-transform: uppercase;
+  font-size: 18px;
+  padding: 25px 0 25px 0;
+}
+#sliderDiv {
+  position: relative;
+  width: 250px;
+  margin: auto;
+}
+#speed {
+  width: 250px;
+  margin-top: 50%;
+  position: absolute;
+  background: none;
+}
+#steering {
+  width: 250px;
+  margin-top: 50%;
+  position: absolute;
+  -webkit-transform: rotate(270deg);
+  -moz-transform: rotate(270deg);
+  -ms-transform: rotate(270deg);
+  -o-transform: rotate(270deg);
+  transform: rotate(270deg);
+}
+#fakeSliderDiv {
+  width: 250px;
+  margin-top: 50%;
+  position: absolute;
+  height: 20px;
+  background: #D6D58E;
+  border-radius: 15px;
+}
+.slider {
+  -webkit-appearance: none;
+  background: #D6D58E;
+  border-radius: 15px;
+}
+.slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  border-radius: 15px;
+  background: #042940;
+  width: 20px;
+  height: 20px;
+}
+#dataDiv {
+  width: 50%;
+  height: 100px;
+  margin: auto;
+  margin-top: 300px;
+  font-weight: bolder;
+}
+#rotationButton {
+  border: 1px solid #D6D58E;
+  background: #042940;
+  border-radius: 4px;
+  text-align: center;
+  font-weight: 500;
+  color: #D6D58E;
+  width: 80%;
+  height: 23px;
+  margin-left: 3%;
+}
+#rotationButton:hover {
+  color: #A0A0A0;
+  border-color: #A0A0A0;
+  transition-duration: 0.1s;
+}
+#rotationButton:active {
+  color: #7C7C7C;
+  border-color: #7C7C7C;
+}
+#buttonData {
+  width: 20px;
+  height: 20px;
+  background: red;
+  margin-right: 3%;
+  border-radius: 15px;
+  border: 2px solid #042940;
+}
+#speedData, #steeringData, #connectionData, #controllerData {
+  width: 100%;
+  height: 100%;
+  padding-top: 5px;
+  text-align: center;
+}
