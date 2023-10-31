@@ -21,3 +21,11 @@ The car's chassis will be 3D printed using PLA filament, while the wheels, suspe
 - 1x Servo motor for the steering arrangement
 - 1-2 meters of wires
 
+## Version 1.1
+- Remade website to be more responsive
+- Remade ArduinoWifi code to be more readable
+- Removed the ability of the Arduino to connect to other wifi networks for simplicity
+
+## Version 1.0
+- Added project to GitHub
+

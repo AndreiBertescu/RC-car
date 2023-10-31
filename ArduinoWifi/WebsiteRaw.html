@@ -1,91 +1,3 @@
-#include <ESP8266WiFi.h>
-#include <ESP8266WebServer.h>
-#include <DNSServer.h>
-
-ESP8266WebServer server(80);
-DNSServer dnsServer;
-
-int speed = 0;
-int steering = 0;
-bool stop = false;
-bool steeringLock = false;
-
-extern const char mainPage[] PROGMEM;
-const char *ssid = "RC-CAR_ESP8266";      //wi-fi network name
-const char *password = "password";          //wi-fi password
-
-///////////////SETTINGS
-#define SPEED_PIN             D1          //speed pin
-#define STEERING_PIN          D2          //steering pin
-#define STEERING_LOCK_PIN     D3          //steering lock pin
-String webName = "http://rc-car.local/";          //website name       -       it needs to be cnages in html file also, ~line 580
-
-void setup() {
-  Serial.begin(115200);
-  delay(100);
-
-  startServer();
-}
-
-void loop(){
-  dnsServer.processNextRequest();
-  server.handleClient();
-  
-  if(stop == 1){
-    speed = 0;
-    steering = 0;
-  }
-}
-
-void startServer(){
-  WiFi.softAP(ssid, password);
-
-  dnsServer.start(53, webName, WiFi.softAPIP());
-
-  server.on("/", HTTP_GET, handleRoot);
-
-  server.on("/data", HTTP_POST, handleData);
-
-  server.onNotFound([](){
-    server.send(404, "text/plain", "404: Not found");
-  });
-
-  server.begin();
-  Serial.println("Server started");
-}
-
-void handleRoot() {
-  server.send(200, "text/html", mainPage);
-}
-
-void handleData() {
-  if (server.hasArg("data")) {
-    int nr = 0, aux = 0;
-    String data = server.arg("data");
-    String packets[5];
-
-    for(int i=0; i<data.length(); i++)
-      if(data.charAt(i) == ' '){
-         packets[nr++] = data.substring(aux, i);
-         aux = i+1;
-      }
-    packets[3] = data.substring(aux, data.length());
-
-    stop = packets[0] == "1" ? true : false;
-    speed = packets[1].toInt();
-    steering = packets[2].toInt();
-    steeringLock = packets[3] == "1" ? true : false;
-
-    server.send(200, "text/plain", "Data received: " + data);
-  } else {
-    Serial.println("Data not recieved.");
-    server.send(400, "text/plain", "Bad Request");
-  }
-}
-
-////////////////Web Page
-const char mainPage[] PROGMEM=
-R"=====(
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -580,7 +492,7 @@ function sendData() {
 
 function checkServerConnection() {
     var xhr = new XMLHttpRequest();
-    var url = "http://rc-car.local/";
+    var url = "http://192.168.4.1";
     xhr.open("GET", url, true);
     xhr.timeout = 2000;
   
@@ -607,4 +519,3 @@ function checkServerConnection() {
 /* --------------------/ServerHandling-------------------- */
 </script>
 </html>
-)=====";

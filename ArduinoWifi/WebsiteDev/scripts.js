@@ -1,256 +1,3 @@
-#include <ESP8266WiFi.h>
-#include <ESP8266WebServer.h>
-#include <DNSServer.h>
-
-ESP8266WebServer server(80);
-DNSServer dnsServer;
-
-int speed = 0;
-int steering = 0;
-bool stop = false;
-bool steeringLock = false;
-
-extern const char mainPage[] PROGMEM;
-const char *ssid = "RC-CAR_ESP8266";      //wi-fi network name
-const char *password = "password";          //wi-fi password
-
-///////////////SETTINGS
-#define SPEED_PIN             D1          //speed pin
-#define STEERING_PIN          D2          //steering pin
-#define STEERING_LOCK_PIN     D3          //steering lock pin
-String webName = "http://rc-car.local/";          //website name       -       it needs to be cnages in html file also, ~line 580
-
-void setup() {
-  Serial.begin(115200);
-  delay(100);
-
-  startServer();
-}
-
-void loop(){
-  dnsServer.processNextRequest();
-  server.handleClient();
-  
-  if(stop == 1){
-    speed = 0;
-    steering = 0;
-  }
-}
-
-void startServer(){
-  WiFi.softAP(ssid, password);
-
-  dnsServer.start(53, webName, WiFi.softAPIP());
-
-  server.on("/", HTTP_GET, handleRoot);
-
-  server.on("/data", HTTP_POST, handleData);
-
-  server.onNotFound([](){
-    server.send(404, "text/plain", "404: Not found");
-  });
-
-  server.begin();
-  Serial.println("Server started");
-}
-
-void handleRoot() {
-  server.send(200, "text/html", mainPage);
-}
-
-void handleData() {
-  if (server.hasArg("data")) {
-    int nr = 0, aux = 0;
-    String data = server.arg("data");
-    String packets[5];
-
-    for(int i=0; i<data.length(); i++)
-      if(data.charAt(i) == ' '){
-         packets[nr++] = data.substring(aux, i);
-         aux = i+1;
-      }
-    packets[3] = data.substring(aux, data.length());
-
-    stop = packets[0] == "1" ? true : false;
-    speed = packets[1].toInt();
-    steering = packets[2].toInt();
-    steeringLock = packets[3] == "1" ? true : false;
-
-    server.send(200, "text/plain", "Data received: " + data);
-  } else {
-    Serial.println("Data not recieved.");
-    server.send(400, "text/plain", "Bad Request");
-  }
-}
-
-////////////////Web Page
-const char mainPage[] PROGMEM=
-R"=====(
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta http-equiv="X-UA-Compatible" content="ie=edge">
-<title>RC Control Panel</title>
-	
-<style>
-* {
-  margin: 0;
-  padding: 0;
-  border-width: 0;
-  text-align: center;
-  color: #042940;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  transition-duration: 0.2s;
-  -webkit-touch-callout: none;
-  -webkit-user-select: none;
-  -khtml-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-  font-weight: bold;
-  overflow: hidden;
-}
-#mainContainer {
-  width: 100%;
-  height: 100vh;
-  background: #005C53;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-#mainDiv {
-  width: 500px;
-  height: 600px;
-  background: #9FC131;
-  border-radius: 3px;
-  padding: 10px 0;
-}
-.paragraph {
-  font-size: 18px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 2%;
-}
-.paragraphRight {
-  padding: 10%;
-}
-.dot {
-  height: 25px;
-  width: 25px;
-  background-color: red;
-  border: 2px solid #042940;
-  border-radius: 30%;
-  display: inline-block;
-}
-#sLock {
-  margin-left: 10px;
-  padding: 3% 6%;
-  border-radius: 10px;
-  border: 2px solid black;
-  background: none;
-  font-size: 18px;
-}
-#sLock:hover {
-  background: rgba(0, 0, 0, 0.2);
-}
-#sLock:active {
-  margin-left: 10px;
-  padding: 3% 6%;
-  background: rgba(0, 0, 0, 0.3);
-}
-#stop {
-  font-size: 18px;
-  padding: 5% 15%;
-  border-radius: 5px;
-  background: green;
-  border: 3px solid #042940;
-}
-/* --------------------ProgressBars-------------------- */
-#verticalBarContainer {
-  position: relative;
-  background-color: #9BC9C7;
-  width: 50px;
-  max-width: 100%;
-  height: 80%;
-  margin-left: calc(50% - 25px);
-  margin-bottom: 5px;
-}
-#verticalBar {
-  position: absolute;
-  background-color: #199c85;
-  bottom: 50%;
-  width: 100%;
-  height: 0px;
-  transition-duration: 0s;
-}
-#horizontalBarContainer {
-  position: relative;
-  background-color: #9BC9C7;
-  width: 80%;
-  margin-left: 10%;
-  height: 50px;
-}
-#horizontalBar {
-  position: absolute;
-  background-color: #199c85;
-  left: 50%;
-  width: 0px;
-  height: 100%;
-  transition-duration: 0s;
-}
-/* --------------------/ProgressBars-------------------- */
-</style>
-</head>
-
-<body>
-<div id="mainContainer">
-  <div id="mainDiv">
-    <table style="height: 10%; width: 100%;">
-      <tr>
-        <td style="border-bottom: 2px solid #042940;"><p class="paragraph" style="padding-bottom: calc(3% + 5px);">RC-CAR CONTROL PANEL</p></td>
-      </tr>
-    </table>
-    <table style="height: 50%; width: 100%;">
-      <tr style="height: 50%; width: 100%;">
-        <td style="width: 30%; border-bottom: 2px solid #042940;"><div id="verticalBarContainer">
-            <div id="verticalBar"> </div>
-          </div>
-          Speed: <span id="speed"> </span>%</td>
-        <td style="width: 70%; border-bottom: 2px solid #042940; border-left: 2px solid #042940;"><div class = "paragraph paragraphRight"> <span class="dot" id="sLockSpan"></span>
-            <button id="sLock" onClick="setSLock();">STEERING LOCK</button>
-          </div>
-          <div id="horizontalBarContainer">
-            <div id="horizontalBar"> </div>
-          </div>
-          Steering: <span id="steering"></span>%
-          <div class = "paragraph paragraphRight">
-            <button id="stop" onclick="setStop()">STOP</button>
-          </div></td>
-      </tr>
-    </table>
-    <table style="height: 40%; width: 100%;">
-      <tr style="height: 10%; width: 100%;">
-        <td><div class = "paragraph" style="height: 10%;"> <span class="dot" id="serverDot"></span>
-            <p id="serverConnection">&nbsp;Server is not connected.</p>
-          </div></td>
-      </tr>
-      <tr style="height: 10%; width: 100%;">
-        <td><div class = "paragraph" style="height: 50%;"> <span class="dot" id="controllerDot"></span>
-            <p id="controllerConnection">&nbsp;Controller is not connected.</p>
-          </div></td>
-      </tr>
-      <tr style="height: 50%; width: 100%;">
-        <td style="border-top: 2px solid #042940;"><canvas id="canvas" style=" height:100%;"></canvas></td>
-      </tr>
-    </table>
-  </div>
-</div>
-</body>
-	
-<script>
 /* --------------------Controller-------------------- */
 var activeGamepad = null;
 var controllerSteering = 0;
@@ -399,7 +146,6 @@ function getPosition(event) {
 
 function is_it_in_the_circle() {
   var current_radius = Math.sqrt(Math.pow(coord.x - x_orig, 2) + Math.pow(coord.y - y_orig, 2));
-
   if (radius >= current_radius) return true
   else return false
 }
@@ -556,9 +302,9 @@ function handleValues() {
 
 /* --------------------ServerHandling-------------------- */
 function sendData() {
-  if (!isConnected)
-    return;
-
+  if(!isConnected)
+	  return;
+	
   var data = stop ? "1" : "0";
   data += " " + finalSpeed;
   data += " " + finalSteering;
@@ -580,7 +326,7 @@ function sendData() {
 
 function checkServerConnection() {
     var xhr = new XMLHttpRequest();
-    var url = "http://rc-car.local/";
+    var url = "http://192.168.4.1";
     xhr.open("GET", url, true);
     xhr.timeout = 2000;
   
@@ -605,6 +351,3 @@ function checkServerConnection() {
     xhr.send();
 }
 /* --------------------/ServerHandling-------------------- */
-</script>
-</html>
-)=====";

@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta http-equiv="X-UA-Compatible" content="ie=edge">
+<title>RC Control Panel</title>
+<link rel="stylesheet" href="styleSheet.css">
+</head>
+
+<body>
+<div id="mainContainer">
+  <div id="mainDiv">
+    <table style="height: 10%; width: 100%;">
+      <tr>
+        <td style="border-bottom: 2px solid #042940;"><p class="paragraph" style="padding-bottom: calc(3% + 5px);">RC-CAR CONTROL PANEL</p></td>
+      </tr>
+    </table>
+    <table style="height: 50%; width: 100%;">
+      <tr style="height: 50%; width: 100%;">
+        <td style="width: 30%; border-bottom: 2px solid #042940;"><div id="verticalBarContainer">
+            <div id="verticalBar"> </div>
+          </div>
+          Speed: <span id="speed"> </span>%</td>
+        <td style="width: 70%; border-bottom: 2px solid #042940; border-left: 2px solid #042940;"><div class = "paragraph paragraphRight"> <span class="dot" id="sLockSpan"></span>
+            <button id="sLock" onClick="setSLock();">STEERING LOCK</button>
+          </div>
+          <div id="horizontalBarContainer">
+            <div id="horizontalBar"> </div>
+          </div>
+          Steering: <span id="steering"></span>%
+          <div class = "paragraph paragraphRight">
+            <button id="stop" onclick="setStop()">STOP</button>
+          </div></td>
+      </tr>
+    </table>
+    <table style="height: 40%; width: 100%;">
+      <tr style="height: 10%; width: 100%;">
+        <td><div class = "paragraph" style="height: 10%;"> <span class="dot" id="serverDot"></span>
+            <p id="serverConnection">&nbsp;Server is not connected.</p>
+          </div></td>
+      </tr>
+      <tr style="height: 10%; width: 100%;">
+        <td><div class = "paragraph" style="height: 50%;"> <span class="dot" id="controllerDot"></span>
+            <p id="controllerConnection">&nbsp;Controller is not connected.</p>
+          </div></td>
+      </tr>
+      <tr style="height: 50%; width: 100%;">
+        <td style="border-top: 2px solid #042940;"><canvas id="canvas" style=" height:100%;"></canvas></td>
+      </tr>
+    </table>
+  </div>
+</div>
+<script src = "scripts.js" ></script>
+</body>
+</html>
