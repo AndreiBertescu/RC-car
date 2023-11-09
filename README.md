@@ -45,6 +45,10 @@ The car's chassis was designed in Fusion360 and will be 3D printed using PLA fil
 - Added project to GitHub
 
 ## Images
+- Car model
+![image](https://github.com/AndreiBertescu/RC-car/assets/126001291/6e7a9fec-dae6-4ae7-8f0a-dee15875384b)
+
+
 - Bought parts
 ![Img](https://github.com/AndreiBertescu/RC-car/assets/126001291/dbc102bd-0316-42f4-a8c7-17943650daa4)
 
@@ -56,5 +60,12 @@ The car's chassis was designed in Fusion360 and will be 3D printed using PLA fil
 
 - Arduino UNO R3
 ![image](https://github.com/AndreiBertescu/RC-car/assets/126001291/827fd8d9-7ad5-4c6d-983e-48532b179a33)
+
+- Front wheels assembly
+![image](https://github.com/AndreiBertescu/RC-car/assets/126001291/63b8bf6c-6c23-4376-a6e5-4054f689306f)
+
+- Small car components prepared for 3d-printing
+![image](https://github.com/AndreiBertescu/RC-car/assets/126001291/1e3a0aad-15d6-4f66-97d3-aacb0889842f)
+
 
 
