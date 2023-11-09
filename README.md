@@ -17,7 +17,7 @@ The car's chassis was designed in Fusion360 and will be 3D printed using PLA fil
 - 4x 7.5cm diameter wheels.
 - 4x 6cm hole-to-hole suspensions.
 - 2x 6.5cm hole-to-hole steering axels.
-- 1x Servo motor for the steering arrangement.
+- 1x MG996R 10Kg/cm servo motor for the steering arrangement.
 - 1x 9V battery (which can be replaced with any rechargeable battery).
 - A bunch of wires.
 - Acces to a 3D-printer for the chassis.
