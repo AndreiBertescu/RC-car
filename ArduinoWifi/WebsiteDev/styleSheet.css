@@ -13,6 +13,7 @@
   -ms-user-select: none;
   user-select: none;
   font-weight: bold;
+  overflow: hidden;
 }
 #mainContainer {
   width: 100%;
@@ -23,8 +24,8 @@
   align-items: center;
 }
 #mainDiv {
-  width: 500px;
-  height: 600px;
+  min-width: 30vw;
+  max-height: 95vh;
   background: #9FC131;
   border-radius: 3px;
   padding: 10px 0;

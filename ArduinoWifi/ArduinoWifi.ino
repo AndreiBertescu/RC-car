@@ -1,9 +1,7 @@
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
-#include <DNSServer.h>
 
 ESP8266WebServer server(80);
-DNSServer dnsServer;
 
 int speed = 0;
 int steering = 0;
@@ -15,12 +13,16 @@ const char *ssid = "RC-CAR_ESP8266";      //wi-fi network name
 const char *password = "password";          //wi-fi password
 
 ///////////////SETTINGS
-#define SPEED_PIN             D1          //speed pin
-#define STEERING_PIN          D2          //steering pin
-#define STEERING_LOCK_PIN     D3          //steering lock pin
-String webName = "http://rc-car.local/";          //website name       -       it needs to be cnages in html file also, ~line 580
+//The website url is: http://192.168.4.1
+#define SPEED_PIN             D5          //speed pin
+#define STEERING_PIN          D6          //steering pin
+#define STEERING_LOCK_PIN     D7          //steering lock pin
 
 void setup() {
+  pinMode(SPEED_PIN, OUTPUT);
+  pinMode(STEERING_PIN, OUTPUT);
+  pinMode(STEERING_LOCK_PIN, OUTPUT);
+
   Serial.begin(115200);
   delay(100);
 
@@ -28,19 +30,20 @@ void setup() {
 }
 
 void loop(){
-  dnsServer.processNextRequest();
   server.handleClient();
   
   if(stop == 1){
     speed = 0;
     steering = 0;
   }
+  
+  analogWrite(SPEED_PIN, (int)map(speed, -100, 100, 5, 250));
+  analogWrite(STEERING_PIN, (int)map(steering, -100, 100, 5, 250));
+  analogWrite(STEERING_LOCK_PIN, steeringLock ? 250 : 5);
 }
 
 void startServer(){
   WiFi.softAP(ssid, password);
-
-  dnsServer.start(53, webName, WiFi.softAPIP());
 
   server.on("/", HTTP_GET, handleRoot);
 
@@ -121,8 +124,8 @@ R"=====(
   align-items: center;
 }
 #mainDiv {
-  width: 500px;
-  height: 600px;
+  min-width: 30vw;
+  max-height: 95vh;
   background: #9FC131;
   border-radius: 3px;
   padding: 10px 0;
@@ -255,6 +258,8 @@ R"=====(
 var activeGamepad = null;
 var controllerSteering = 0;
 var controllerSpeed = 0;
+var buttonPressed = false;
+var buttonPressed2 = false;
 
 window.addEventListener("gamepadconnected", (event) => {
   console.log("A gamepad connected:");
@@ -285,8 +290,20 @@ function checkGamepads() {
     document.getElementById("controllerConnection").innerHTML = "&nbsp " + activeGamepad.id.split(' (')[0];
     document.getElementById("controllerDot").style.backgroundColor = "green";
 
+    if (activeGamepad.buttons[0].pressed && !buttonPressed) {
+      setSLock();
+      buttonPressed = true;
+    } else if (!activeGamepad.buttons[0].pressed)
+      buttonPressed = false;
+	  
+	if (activeGamepad.buttons[3].pressed && !buttonPressed2) {
+	  setStop();
+      buttonPressed2 = true;
+    } else if (!activeGamepad.buttons[3].pressed)
+      buttonPressed2 = false;
+
     controllerSpeed = Math.floor(activeGamepad.axes[1] * 100);
-    controllerSteering = Math.floor(activeGamepad.axes[0] * 100);
+    controllerSteering = Math.floor(activeGamepad.axes[2] * 100);
   } else {
     document.getElementById("controllerConnection").innerHTML = "&nbsp;Controller is not connected.";
     document.getElementById("controllerDot").style.backgroundColor = "red";
@@ -373,6 +390,9 @@ function joystick(x, y, fromController) {
 
     x = y2 + x_orig;
     y = x2 + y_orig;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    background();
   }
 
   ctx.beginPath();
@@ -399,7 +419,6 @@ function getPosition(event) {
 
 function is_it_in_the_circle() {
   var current_radius = Math.sqrt(Math.pow(coord.x - x_orig, 2) + Math.pow(coord.y - y_orig, 2));
-
   if (radius >= current_radius) return true
   else return false
 }
@@ -538,7 +557,7 @@ function handleValues() {
       document.getElementById("verticalBar").style.top = "50%";
     }
 
-    if (finalSteering > 0) {
+    if (-finalSteering > 0) {
       document.getElementById("horizontalBar").style.right = "50%";
       document.getElementById("horizontalBar").style.left = "inherit";
     } else {
@@ -568,41 +587,34 @@ function sendData() {
   xhr.open("POST", "/data", true);
   xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 
-  // xhr.onreadystatechange = function() {
-  //   if (xhr.readyState == 4 && xhr.status == 200) {
-  //     // Handle the response from the server if needed
-  //     console.log(xhr.responseText);
-  //   }
-  // };
-  
   xhr.send("data=" + data);
 }
 
 function checkServerConnection() {
-    var xhr = new XMLHttpRequest();
-    var url = "http://rc-car.local/";
-    xhr.open("GET", url, true);
-    xhr.timeout = 2000;
-  
-    xhr.onreadystatechange = function () {
-      if (xhr.readyState === 4)
-        if (xhr.status === 200)
-          isConnected = true;
-        else {
-          isConnected = false;
-          serverMessage = "Request encountered an error: " + xhr.status + ".";
-        }
-    };
-  
-    xhr.ontimeout = function () {
-      serverMessage = "Request timed out."; // Request timed out
-    };
-  
-    xhr.onerror = function () {
-      serverMessage = "Request encountered an error."; // Request encountered an error
-    };
-  
-    xhr.send();
+  var xhr = new XMLHttpRequest();
+  var url = "http://192.168.4.1";
+  xhr.open("GET", url, true);
+  xhr.timeout = 2000;
+
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState === 4)
+      if (xhr.status === 200)
+        isConnected = true;
+      else {
+        isConnected = false;
+        serverMessage = "Request encountered an error: " + xhr.status + ".";
+      }
+  };
+
+  xhr.ontimeout = function () {
+    serverMessage = "Request timed out."; // Request timed out
+  };
+
+  xhr.onerror = function () {
+    serverMessage = "Request encountered an error."; // Request encountered an error
+  };
+
+  xhr.send();
 }
 /* --------------------/ServerHandling-------------------- */
 </script>

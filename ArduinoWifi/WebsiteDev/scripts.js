@@ -2,6 +2,8 @@
 var activeGamepad = null;
 var controllerSteering = 0;
 var controllerSpeed = 0;
+var buttonPressed = false;
+var buttonPressed2 = false;
 
 window.addEventListener("gamepadconnected", (event) => {
   console.log("A gamepad connected:");
@@ -32,8 +34,20 @@ function checkGamepads() {
     document.getElementById("controllerConnection").innerHTML = "&nbsp " + activeGamepad.id.split(' (')[0];
     document.getElementById("controllerDot").style.backgroundColor = "green";
 
+    if (activeGamepad.buttons[0].pressed && !buttonPressed) {
+      setSLock();
+      buttonPressed = true;
+    } else if (!activeGamepad.buttons[0].pressed)
+      buttonPressed = false;
+	  
+	if (activeGamepad.buttons[3].pressed && !buttonPressed2) {
+	  setStop();
+      buttonPressed2 = true;
+    } else if (!activeGamepad.buttons[3].pressed)
+      buttonPressed2 = false;
+
     controllerSpeed = Math.floor(activeGamepad.axes[1] * 100);
-    controllerSteering = Math.floor(activeGamepad.axes[0] * 100);
+    controllerSteering = Math.floor(activeGamepad.axes[2] * 100);
   } else {
     document.getElementById("controllerConnection").innerHTML = "&nbsp;Controller is not connected.";
     document.getElementById("controllerDot").style.backgroundColor = "red";
@@ -120,6 +134,9 @@ function joystick(x, y, fromController) {
 
     x = y2 + x_orig;
     y = x2 + y_orig;
+
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    background();
   }
 
   ctx.beginPath();
@@ -284,7 +301,7 @@ function handleValues() {
       document.getElementById("verticalBar").style.top = "50%";
     }
 
-    if (finalSteering > 0) {
+    if (-finalSteering > 0) {
       document.getElementById("horizontalBar").style.right = "50%";
       document.getElementById("horizontalBar").style.left = "inherit";
     } else {
@@ -302,9 +319,9 @@ function handleValues() {
 
 /* --------------------ServerHandling-------------------- */
 function sendData() {
-  if(!isConnected)
-	  return;
-	
+  if (!isConnected)
+    return;
+
   var data = stop ? "1" : "0";
   data += " " + finalSpeed;
   data += " " + finalSteering;
@@ -314,40 +331,33 @@ function sendData() {
   xhr.open("POST", "/data", true);
   xhr.setRequestHeader("Content-Type", "application/x-www-form-urlencoded");
 
-  // xhr.onreadystatechange = function() {
-  //   if (xhr.readyState == 4 && xhr.status == 200) {
-  //     // Handle the response from the server if needed
-  //     console.log(xhr.responseText);
-  //   }
-  // };
-  
   xhr.send("data=" + data);
 }
 
 function checkServerConnection() {
-    var xhr = new XMLHttpRequest();
-    var url = "http://192.168.4.1";
-    xhr.open("GET", url, true);
-    xhr.timeout = 2000;
-  
-    xhr.onreadystatechange = function () {
-      if (xhr.readyState === 4)
-        if (xhr.status === 200)
-          isConnected = true;
-        else {
-          isConnected = false;
-          serverMessage = "Request encountered an error: " + xhr.status + ".";
-        }
-    };
-  
-    xhr.ontimeout = function () {
-      serverMessage = "Request timed out."; // Request timed out
-    };
-  
-    xhr.onerror = function () {
-      serverMessage = "Request encountered an error."; // Request encountered an error
-    };
-  
-    xhr.send();
+  var xhr = new XMLHttpRequest();
+  var url = "http://192.168.4.1";
+  xhr.open("GET", url, true);
+  xhr.timeout = 2000;
+
+  xhr.onreadystatechange = function () {
+    if (xhr.readyState === 4)
+      if (xhr.status === 200)
+        isConnected = true;
+      else {
+        isConnected = false;
+        serverMessage = "Request encountered an error: " + xhr.status + ".";
+      }
+  };
+
+  xhr.ontimeout = function () {
+    serverMessage = "Request timed out."; // Request timed out
+  };
+
+  xhr.onerror = function () {
+    serverMessage = "Request encountered an error."; // Request encountered an error
+  };
+
+  xhr.send();
 }
 /* --------------------/ServerHandling-------------------- */
