@@ -8,7 +8,7 @@ The setup includes a Plusivo Arduino Uno, paired with an Arduino WiFi board, and
 
 Two Arduino boards are used because the WiFi board lacks access to the OCR2A/B and OCR0A/B timers, while the Arduino Uno lacks built-in WiFi capability.
 
-The car's chassis will be 3D printed using PLA filament, while the wheels, suspensions, motors, battery, and wires are purchased separately.
+The car's chassis was designed in Fusion360 and will be 3D printed using PLA filament, while the wheels, suspensions, motors, battery, and wires are purchased separately. The car can work in two modes: one where the servo is not used to steer the car, only the wheels, and one where the servo is connected to the two steering axles, thus turning the wheels. In the former working mode, two stoppers have been designed to prevent the wheels from spinning on their own.
 
 ## Components
 - 1x Arduino UNO R3 board: [datasheet](https://docs.arduino.cc/resources/datasheets/A000066-datasheet.pdf)
@@ -27,6 +27,10 @@ The car's chassis will be 3D printed using PLA filament, while the wheels, suspe
 - The 'ArduinoWifiDriver' directory was included because of a recurring error when trying to write the program on the D1 R2 board.
 - The website url to control the car is: http://192.168.4.1
 - The website will load only if you are connected to the propper wifi network named '**RC-CAR_ESP8266**' with the password '**password**'.
+
+## Version 1.3
+- Updated chassis models with two available extensions: one specific to Fusion360 and stl.
+- The total amount of filament used is 123 meters.
 
 ## Version 1.2
 - Rechecked the Arduino Uno code to ensure it works
