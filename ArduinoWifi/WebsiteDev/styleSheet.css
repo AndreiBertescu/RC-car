@@ -24,8 +24,8 @@
   align-items: center;
 }
 #mainDiv {
-  min-width: 30vw;
-  max-height: 95vh;
+  min-width: 40vw;
+  height: 100vh;
   background: #9FC131;
   border-radius: 3px;
   padding: 10px 0;
@@ -36,6 +36,7 @@
   justify-content: center;
   align-items: center;
   padding: 2%;
+  min-height: 30px;
 }
 .paragraphRight {
   padding: 10%;
@@ -105,3 +106,19 @@
   transition-duration: 0s;
 }
 /* --------------------/ProgressBars-------------------- */
+@media screen and (max-width: 900px) {
+	#mainDiv {
+	  min-width: 70vw;
+	}
+	#mainTitle{
+		display: none;
+	}
+}
+@media screen and (max-width: 600px) {
+	#mainDiv {
+	  min-width: 100vw;
+	}
+	#mainTitle{
+		display: none;
+	}
+}

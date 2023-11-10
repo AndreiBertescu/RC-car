@@ -124,8 +124,8 @@ R"=====(
   align-items: center;
 }
 #mainDiv {
-  min-width: 30vw;
-  max-height: 95vh;
+  min-width: 40vw;
+  height: 100vh;
   background: #9FC131;
   border-radius: 3px;
   padding: 10px 0;
@@ -136,6 +136,7 @@ R"=====(
   justify-content: center;
   align-items: center;
   padding: 2%;
+  min-height: 30px;
 }
 .paragraphRight {
   padding: 10%;
@@ -205,13 +206,29 @@ R"=====(
   transition-duration: 0s;
 }
 /* --------------------/ProgressBars-------------------- */
+@media screen and (max-width: 900px) {
+	#mainDiv {
+	  min-width: 70vw;
+	}
+	#mainTitle{
+		display: none;
+	}
+}
+@media screen and (max-width: 600px) {
+	#mainDiv {
+	  min-width: 100vw;
+	}
+	#mainTitle{
+		display: none;
+	}
+}
 </style>
 </head>
 
 <body>
 <div id="mainContainer">
   <div id="mainDiv">
-    <table style="height: 10%; width: 100%;">
+    <table id="mainTitle" style="height: 10%; width: 100%;">
       <tr>
         <td style="border-bottom: 2px solid #042940;"><p class="paragraph" style="padding-bottom: calc(3% + 5px);">RC-CAR CONTROL PANEL</p></td>
       </tr>
@@ -246,7 +263,7 @@ R"=====(
           </div></td>
       </tr>
       <tr style="height: 50%; width: 100%;">
-        <td style="border-top: 2px solid #042940;"><canvas id="canvas" style=" height:100%;"></canvas></td>
+        <td style="border-top: 2px solid #042940;margin-bottom: 10%;"><canvas id="canvas" style=" height:100%;"></canvas></td>
       </tr>
     </table>
   </div>
