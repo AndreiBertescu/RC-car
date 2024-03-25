@@ -72,6 +72,17 @@
   background: green;
   border: 3px solid #042940;
 }
+#honk {
+  font-size: 18px;
+  padding: 5% 5%;
+  margin-right: 15px;
+  border-radius: 5px;
+  background: #0FB1BC;
+  border: 3px solid #042940;
+}
+#honk:active {
+  background: #0C919A;
+}	
 /* --------------------ProgressBars-------------------- */
 #verticalBarContainer {
   position: relative;

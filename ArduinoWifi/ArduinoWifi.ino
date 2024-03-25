@@ -7,21 +7,24 @@ int speed = 0;
 int steering = 0;
 bool stop = false;
 bool steeringLock = false;
+bool honk = false;
 
 extern const char mainPage[] PROGMEM;
-const char *ssid = "RC-CAR_ESP8266";      //wi-fi network name
-const char *password = "password";          //wi-fi password
+const char *ssid = "RC-CAR_ESP8266";  //wi-fi network name
+const char *password = "password";    //wi-fi password
 
 ///////////////SETTINGS
 //The website url is: http://192.168.4.1
-#define SPEED_PIN             D5          //speed pin
-#define STEERING_PIN          D6          //steering pin
-#define STEERING_LOCK_PIN     D7          //steering lock pin
+#define SPEED_PIN D5          //speed pin
+#define STEERING_PIN D6       //steering pin
+#define STEERING_LOCK_PIN D7  //steering lock pin
+#define HONK_PIN D3           //honk pin
 
 void setup() {
   pinMode(SPEED_PIN, OUTPUT);
   pinMode(STEERING_PIN, OUTPUT);
   pinMode(STEERING_LOCK_PIN, OUTPUT);
+  pinMode(HONK_PIN, OUTPUT);
 
   Serial.begin(115200);
   delay(100);
@@ -29,10 +32,10 @@ void setup() {
   startServer();
 }
 
-void loop(){
+void loop() {
   server.handleClient();
-  
-  if(stop == 1){
+
+  if (stop == 1) {
     speed = 0;
     steering = 0;
   }
@@ -40,16 +43,21 @@ void loop(){
   analogWrite(SPEED_PIN, (int)map(speed, -100, 100, 5, 250));
   analogWrite(STEERING_PIN, (int)map(steering, -100, 100, 5, 250));
   analogWrite(STEERING_LOCK_PIN, steeringLock ? 250 : 5);
+
+  if (honk)
+    tone(HONK_PIN, 1000);
+  else
+    noTone(HONK_PIN);
 }
 
-void startServer(){
+void startServer() {
   WiFi.softAP(ssid, password);
 
   server.on("/", HTTP_GET, handleRoot);
 
   server.on("/data", HTTP_POST, handleData);
 
-  server.onNotFound([](){
+  server.onNotFound([]() {
     server.send(404, "text/plain", "404: Not found");
   });
 
@@ -65,19 +73,20 @@ void handleData() {
   if (server.hasArg("data")) {
     int nr = 0, aux = 0;
     String data = server.arg("data");
-    String packets[5];
-
-    for(int i=0; i<data.length(); i++)
-      if(data.charAt(i) == ' '){
-         packets[nr++] = data.substring(aux, i);
-         aux = i+1;
+    String packets[6];
+    
+    for (int i = 0; i < data.length(); i++)
+      if (data.charAt(i) == ' ') {
+        packets[nr++] = data.substring(aux, i);
+        aux = i + 1;
       }
-    packets[3] = data.substring(aux, data.length());
+    packets[4] = data.substring(aux, data.length());
 
     stop = packets[0] == "1" ? true : false;
     speed = packets[1].toInt();
     steering = packets[2].toInt();
     steeringLock = packets[3] == "1" ? true : false;
+    honk = packets[4] == "1" ? true : false;
 
     server.send(200, "text/plain", "Data received: " + data);
   } else {
@@ -87,8 +96,8 @@ void handleData() {
 }
 
 ////////////////Web Page
-const char mainPage[] PROGMEM=
-R"=====(
+const char mainPage[] PROGMEM =
+  R"=====(
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -172,6 +181,17 @@ R"=====(
   background: green;
   border: 3px solid #042940;
 }
+#honk {
+  font-size: 18px;
+  padding: 5% 5%;
+  margin-right: 15px;
+  border-radius: 5px;
+  background: #0FB1BC;
+  border: 3px solid #042940;
+}
+#honk:active {
+  background: #0C919A;
+}	
 /* --------------------ProgressBars-------------------- */
 #verticalBarContainer {
   position: relative;
@@ -247,6 +267,7 @@ R"=====(
           </div>
           Steering: <span id="steering"></span>%
           <div class = "paragraph paragraphRight">
+            <button id="honk" onclick="setHonk()">Honk</button>
             <button id="stop" onclick="setStop()">STOP</button>
           </div></td>
       </tr>
@@ -312,9 +333,14 @@ function checkGamepads() {
       buttonPressed = true;
     } else if (!activeGamepad.buttons[0].pressed)
       buttonPressed = false;
-	  
-	if (activeGamepad.buttons[3].pressed && !buttonPressed2) {
-	  setStop();
+
+    if (activeGamepad.buttons[1].pressed) {
+      enableHonk();
+    } else
+      disableHonk();
+
+    if (activeGamepad.buttons[3].pressed && !buttonPressed2) {
+      setStop();
       buttonPressed2 = true;
     } else if (!activeGamepad.buttons[3].pressed)
       buttonPressed2 = false;
@@ -507,6 +533,7 @@ function mapValue(x, inMin, inMax, outMin, outMax) {
 
 /* --------------------DataHandling-------------------- */
 var steeringLock = false;
+var honk = false;
 var stop = true;
 var isConnected = false;
 var serverMessage = "Connection not checked.";
@@ -522,6 +549,18 @@ function setStop() {
   stop = !stop;
 }
 
+function setHonk() {
+  honk = !honk;
+}
+
+function enableHonk() {
+  honk = true;
+}
+
+function disableHonk() {
+  honk = false;
+}
+
 function handleValues() {
   //server Stuff
   if (!isConnected) {
@@ -533,10 +572,10 @@ function handleValues() {
     document.getElementById("serverDot").style.backgroundColor = "green";
   }
 
-  //steering lock
   document.getElementById("sLockSpan").style.backgroundColor = steeringLock ? "green" : "red";
   document.getElementById("stop").style.backgroundColor = stop ? "green" : "#dc3545";
   document.getElementById("stop").innerHTML = stop ? "START" : "STOP";
+  document.getElementById("honk").style.backgroundColor = honk ? "#0F60BC" : "#0FB1BC";
 
   //speed and steering
   if (!stop) {
@@ -599,6 +638,7 @@ function sendData() {
   data += " " + finalSpeed;
   data += " " + finalSteering;
   data += " " + (steeringLock ? "1" : "0");
+  data += " " + (honk ? "1" : "0");
 
   var xhr = new XMLHttpRequest();
   xhr.open("POST", "/data", true);

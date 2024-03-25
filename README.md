@@ -21,6 +21,7 @@ The car's chassis was designed in Fusion360 and will be 3D printed using PLA fil
 - 1x Arduino UNO R3 board: [datasheet](https://docs.arduino.cc/resources/datasheets/A000066-datasheet.pdf)
 - 1x WEMOS ESP8266 D1 R2 board: [details](https://wiki.geekworm.com/WEMOS_ESP8266_D1_R2_V2.1)
 - 1x L293D quad H-bridge motor controller shield: [manual](https://cdn-learn.adafruit.com/downloads/pdf/adafruit-motor-shield.pdf)
+- 1x passive buzzer
 - 4x 7.5cm diameter wheels.
 - 4x 6cm hole-to-hole suspensions.
 - 2x 6.5cm hole-to-hole steering axels (which have been extended).
@@ -36,12 +37,24 @@ The car's chassis was designed in Fusion360 and will be 3D printed using PLA fil
 - 16 x M5x30
 - 16 x M5x40
 
+## Controls for an Xbox controller
+- Right joystick for steering
+- Light joystick for speed
+- Y button for START/STOP button
+- B button for honk
+- A button for steering lock
+
 ## Notes
 - The joystick in the rc-car-control web page was made with the help of this tutorial: [link](https://www.instructables.com/Making-a-Joystick-With-HTML-pure-JavaScript/)
 - The 'ArduinoWifiDriver' directory was included because of a recurring error when trying to write the program on the D1 R2 board.
 - The website url to control the car is: http://192.168.4.1
 - The website will load only if you are connected to the propper wifi network named '**RC-CAR_ESP8266**' with the password '**password**'.
 - The Wheel-Connector model was not utilized. Instead, 4x M4x15 screws with a 2mm hole drilled in their center were used to connect the motors with the wheels.
+
+## Version 1.4
+- Added schematic
+- Added passive buzzer with honk feature
+- Added custom paintjob
 
 ## Version 1.3
 - Updated chassis models with two available extensions: one specific to Fusion360 and stl.
@@ -62,7 +75,6 @@ The car's chassis was designed in Fusion360 and will be 3D printed using PLA fil
 ## Images
 - Car model
 ![image](https://github.com/AndreiBertescu/RC-car/assets/126001291/6e7a9fec-dae6-4ae7-8f0a-dee15875384b)
-
 
 - Bought parts
 ![Img](https://github.com/AndreiBertescu/RC-car/assets/126001291/dbc102bd-0316-42f4-a8c7-17943650daa4)

@@ -39,9 +39,14 @@ function checkGamepads() {
       buttonPressed = true;
     } else if (!activeGamepad.buttons[0].pressed)
       buttonPressed = false;
-	  
-	if (activeGamepad.buttons[3].pressed && !buttonPressed2) {
-	  setStop();
+
+    if (activeGamepad.buttons[1].pressed) {
+      enableHonk();
+    } else
+      disableHonk();
+
+    if (activeGamepad.buttons[3].pressed && !buttonPressed2) {
+      setStop();
       buttonPressed2 = true;
     } else if (!activeGamepad.buttons[3].pressed)
       buttonPressed2 = false;
@@ -234,6 +239,7 @@ function mapValue(x, inMin, inMax, outMin, outMax) {
 
 /* --------------------DataHandling-------------------- */
 var steeringLock = false;
+var honk = false;
 var stop = true;
 var isConnected = false;
 var serverMessage = "Connection not checked.";
@@ -249,6 +255,18 @@ function setStop() {
   stop = !stop;
 }
 
+function setHonk() {
+  honk = !honk;
+}
+
+function enableHonk() {
+  honk = true;
+}
+
+function disableHonk() {
+  honk = false;
+}
+
 function handleValues() {
   //server Stuff
   if (!isConnected) {
@@ -260,10 +278,10 @@ function handleValues() {
     document.getElementById("serverDot").style.backgroundColor = "green";
   }
 
-  //steering lock
   document.getElementById("sLockSpan").style.backgroundColor = steeringLock ? "green" : "red";
   document.getElementById("stop").style.backgroundColor = stop ? "green" : "#dc3545";
   document.getElementById("stop").innerHTML = stop ? "START" : "STOP";
+  document.getElementById("honk").style.backgroundColor = honk ? "#0F60BC" : "#0FB1BC";
 
   //speed and steering
   if (!stop) {
@@ -326,6 +344,7 @@ function sendData() {
   data += " " + finalSpeed;
   data += " " + finalSteering;
   data += " " + (steeringLock ? "1" : "0");
+  data += " " + (honk ? "1" : "0");
 
   var xhr = new XMLHttpRequest();
   xhr.open("POST", "/data", true);
