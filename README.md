@@ -3,10 +3,10 @@
 This project aims to create an Arduino-controlled RC car.
 
 <p align="center">
-  <img src="https://github.com/AndreiBertescu/RC-car/assets/126001291/d989602e-664d-4bb8-bf9f-a01735db04b3" width="400" height="300" alt="Image 1">
-  <img src="https://github.com/AndreiBertescu/RC-car/assets/126001291/b597887e-b9cc-4e5d-bb37-bd1ae5ddd54c" width="400" height="300" alt="Image 2">
-  <img src="https://github.com/AndreiBertescu/RC-car/assets/126001291/c48d39e5-de0f-464f-ba90-510cc3caec6a" width="400" height="300" alt="Image 3">
-  <img src="https://github.com/AndreiBertescu/RC-car/assets/126001291/d3102435-70fd-461a-8e1a-1cc156964d81" width="400" height="300" alt="Image 4">
+  <img src="https://github.com/AndreiBertescu/RC-car/assets/126001291/f8528036-18fe-4969-a1c0-0ac3a3a58773" width="400" height="300" alt="Image 1">
+  <img src="https://github.com/AndreiBertescu/RC-car/assets/126001291/0a43c557-4570-4bc6-b3dc-1e75a74ee10e" width="400" height="300" alt="Image 2">
+  <img src="https://github.com/AndreiBertescu/RC-car/assets/126001291/ee6a47ca-bcea-4dba-98d3-5afe5cb4d260" width="400" height="300" alt="Image 3">
+  <img src="https://github.com/AndreiBertescu/RC-car/assets/126001291/6b236cb9-2ba1-4e3d-ad68-afdda2ceeb38" width="400" height="300" alt="Image 4">
 </p>
 
 ## Description
@@ -73,6 +73,9 @@ The car's chassis was designed in Fusion360 and will be 3D printed using PLA fil
 - Added project to GitHub
 
 ## Images
+- Schematic
+![Schematic](https://github.com/AndreiBertescu/RC-car/assets/126001291/dd6fdde3-1a99-46b0-b186-6c7fda175f06)
+
 - Car model
 ![image](https://github.com/AndreiBertescu/RC-car/assets/126001291/6e7a9fec-dae6-4ae7-8f0a-dee15875384b)
 
