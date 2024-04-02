@@ -26,7 +26,7 @@ void setup() {
   pinMode(STEERING_LOCK_PIN, OUTPUT);
   pinMode(HONK_PIN, OUTPUT);
 
-  Serial.begin(115200);
+  Serial.begin(9600);
   delay(100);
 
   startServer();
@@ -39,15 +39,29 @@ void loop() {
     speed = 0;
     steering = 0;
   }
-  
-  analogWrite(SPEED_PIN, (int)map(speed, -100, 100, 5, 250));
-  analogWrite(STEERING_PIN, (int)map(steering, -100, 100, 5, 250));
+
+  analogWrite(SPEED_PIN, (int)map(speed, -125, 125, 5, 250));
+  analogWrite(STEERING_PIN, (int)map(steering, -125, 125, 5, 250));
   analogWrite(STEERING_LOCK_PIN, steeringLock ? 250 : 5);
 
   if (honk)
     tone(HONK_PIN, 1000);
   else
     noTone(HONK_PIN);
+
+  // printData();
+}
+
+void printData() {
+  Serial.print(stop);
+  Serial.print(" ");
+  Serial.print(speed);
+  Serial.print(" ");
+  Serial.print(steering);
+  Serial.print(" ");
+  Serial.print(steeringLock);
+  Serial.print(" ");
+  Serial.println(honk);
 }
 
 void startServer() {
@@ -62,7 +76,7 @@ void startServer() {
   });
 
   server.begin();
-  Serial.println("Server started");
+  Serial.println("\nServer started");
 }
 
 void handleRoot() {
@@ -74,7 +88,7 @@ void handleData() {
     int nr = 0, aux = 0;
     String data = server.arg("data");
     String packets[6];
-    
+
     for (int i = 0; i < data.length(); i++)
       if (data.charAt(i) == ' ') {
         packets[nr++] = data.substring(aux, i);

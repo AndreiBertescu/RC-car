@@ -30,7 +30,7 @@ void loop() {
   retrieveValues();
   handleMotors();
 
-  // printValues();
+  printValues();
   // printValueTimings();
 }
 
